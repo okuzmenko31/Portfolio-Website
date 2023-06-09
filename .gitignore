@@ -131,7 +131,7 @@ dmypy.json
 # DJANGO
 media_files
 media
-!/static/
+/static/
 
 # PYCHARM
 .idea
