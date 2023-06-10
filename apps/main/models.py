@@ -2,7 +2,8 @@ from django.db import models
 
 
 class Skills(models.Model):
-    name = models.CharField(max_length=80, verbose_name='Skill name')
+    name = models.CharField(max_length=80,
+                            verbose_name='Skill name')
 
     class Meta:
         verbose_name = 'skill'
@@ -41,3 +42,55 @@ class AboutMeFullTextParts(models.Model):
 
     def __str__(self):
         return f'About info text part of: {self.me.full_name}'
+
+
+def projects_image_upload_path(instance, filename):
+    return f'projects/{filename}'
+
+
+class Technologies(models.Model):
+    name = models.CharField(max_length=150,
+                            verbose_name='Technology name')
+
+    class Meta:
+        verbose_name = 'technology'
+        verbose_name_plural = 'technologies'
+
+    def __str__(self):
+        return f'Technology: {self.name}'
+
+
+class Projects(models.Model):
+    name = models.CharField(max_length=150,
+                            verbose_name='Project name')
+    short_description = models.TextField(max_length=3000,
+                                         verbose_name='Project short description')
+    cover_photo = models.ImageField(upload_to=projects_image_upload_path,
+                                    verbose_name='Project cover photo')
+    technologies_stack = models.ManyToManyField(Technologies,
+                                                verbose_name='Stack of technologies',
+                                                related_name='technologies')
+    link = models.URLField(verbose_name='Project link')
+
+    class Meta:
+        verbose_name = 'project'
+        verbose_name_plural = 'Projects'
+        ordering = ['name']
+
+    def __str__(self):
+        return f'Project: {self.name}'
+
+
+class ProjectOverviewTextParts(models.Model):
+    text = models.TextField(verbose_name='Part text of Project overview')
+    project = models.ForeignKey(Projects,
+                                on_delete=models.CASCADE,
+                                verbose_name='Project instance',
+                                related_name='project_overview_parts')
+
+    class Meta:
+        verbose_name = 'part'
+        verbose_name_plural = 'Project overview parts'
+
+    def __str__(self):
+        return f'About info text part of: {self.project.name}'
